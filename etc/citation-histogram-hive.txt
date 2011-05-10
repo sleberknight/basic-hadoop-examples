@@ -1,0 +1,16 @@
+create external table patent_citations (citing string, cited string)
+row format delimited fields terminated by ','
+stored as textfile
+location '/user/sleberkn/nber-patent/tables/patent_citation';
+
+
+create table citation_histogram (num_citations int, count int)
+stored as sequencefile;
+
+
+insert overwrite table citation_histogram
+select num_citations, count(num_citations) from
+    (select cited, count(cited) as num_citations
+    from patent_citations group by cited) citation_counts
+group by num_citations
+order by num_citations;

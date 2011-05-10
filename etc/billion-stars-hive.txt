@@ -1,0 +1,36 @@
+-- locally
+
+./hadoop fs -mkdir /user/sleberkn/billion-stars/input
+./hadoop fs -put /data/billion-stars/stars_data.txt /user/sleberkn/billion-stars/input
+
+create external table tmp_stars_data (name string, distance bigint)
+stored as textfile
+location '/user/sleberkn/billion-stars/input';
+
+create table stars_data (name string, distance bigint)
+stored as sequencefile;
+
+insert overwrite table stars_data
+select * from tmp_stars_data;
+
+create table closest_stars (name string, distance bigint)
+stored as sequencefile;
+
+insert overwrite table closest_stars
+select name, distance from stars_data order by distance asc limit 100;
+
+
+-- on EMR
+
+create external table tmp_stars_data (name string, distance bigint) stored as textfile location 's3://billion-stars/';
+
+create table stars_data (name string, distance bigint) stored as sequencefile;
+
+insert overwrite table stars_data
+select * from tmp_stars_data;
+
+create table closest_stars (name string, distance bigint)
+stored as sequencefile;
+
+insert overwrite table closest_stars
+select name, distance from stars_data order by distance asc limit 100;
