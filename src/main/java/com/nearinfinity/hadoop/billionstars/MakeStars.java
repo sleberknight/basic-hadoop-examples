@@ -8,7 +8,6 @@ import java.util.Random;
 
 public class MakeStars {
 
-    private static final long MAX_DISTANCE = 100000000000000L;
     private static final int NUM_STARS = 10000000;
     private static final char CTRL_A = '\u0001';
     private static final int NUM_CHARS = 10;
